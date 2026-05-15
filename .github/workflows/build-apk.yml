@@ -36,11 +36,14 @@ jobs:
       - name: Build Android APK
         working-directory: ./android
         run: |
+          # Reduce APK size by only compiling for arm64 (most modern phones)
+          sed -i 's/reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64/reactNativeArchitectures=arm64-v8a/g' gradle.properties
+          
           chmod +x gradlew
-          ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+          ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m"
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: almaarifa-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
